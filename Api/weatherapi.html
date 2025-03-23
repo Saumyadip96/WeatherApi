@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #74EBD5, #ACB6E5);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Weather App</h1>
+    <input type="text" id="location" placeholder="Enter location (e.g., London)">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weather-info" class="result"></div>
+</div>
+
+<script>
+    async function getWeather() {
+        const location = document.getElementById('location').value;
+        const apiKey = '0d380113aab64641b34192144252303';
+        const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=yes`;
+
+        const weatherInfo = document.getElementById('weather-info');
+        weatherInfo.innerHTML = 'Loading...';
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Location not found');
+            }
+
+            const data = await response.json();
+            const { temp_c, condition, humidity, wind_kph } = data.current;
+            const { name, country } = data.location;
+
+            weatherInfo.innerHTML = `
+                <h2>${name}, ${country}</h2>
+                <p>🌡️ Temperature: ${temp_c}°C</p>
+                <p>💨 Wind Speed: ${wind_kph} kph</p>
+                <p>💧 Humidity: ${humidity}%</p>
+                <p>🌥️ Condition: ${condition.text}</p>
+            `;
+
+        } catch (error) {
+            weatherInfo.innerHTML = `<p class="error">⚠️ ${error.message}</p>`;
+        }
+    }
+</script>
+
+</body>
+</html>
